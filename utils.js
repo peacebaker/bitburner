@@ -9,8 +9,8 @@
 /** @param {NS} ns - NetScript. */
 export async function main(ns) {
 
+  // execute requested command
   let cmd = ns.args[0];
-
   switch (cmd) {
 
     case "scan":
@@ -49,7 +49,7 @@ function help(ns) {
 }
 
 /**
- * 
+ * Scan all servers on the network for interesting info.
  * @param {NS} ns - NetScript.
  */
 export function scan(ns) {
@@ -111,11 +111,11 @@ export function scan(ns) {
     msg += `ports: ${server.openPortCount} open / ${server.numOpenPortsRequired} req | `;
     msg += `root: ${server.hasAdminRights}`;
     ns.tprintf(msg);
-    
   }
 }
 
 /** 
+ * Get an array of all servers on the network.
  * @param {NS} ns - NetScript.
  * @returns {Server[]}
  */
@@ -155,12 +155,12 @@ export function getServers(ns) {
 }
 
 /**
- * 
+ * Download all .lit files on the network.
  * @param {NS} ns - NetScript.
  */
 export function getLit(ns) {
 
-  // create an empty array to keep track of downloaded files
+  // keep track of downloaded files
   let got = [];
 
   // search every server for .lit files
@@ -168,7 +168,7 @@ export function getLit(ns) {
   for (const server of servers) {
     let files = ns.ls(server.hostname, ".lit");
 
-    // add every file that's not in the list already
+    // pull every file to home
     for (const file of files) {
       if (!got.includes(files)) {
         ns.tprintf(`downloading ${file} from ${server.hostname}`);
