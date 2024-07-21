@@ -75,14 +75,8 @@ function help(ns, topic) {
   let text = `botnet.js: ${topic} usage\n`
   switch (topic) {
 
-    // case 'info':
-    //   break;
-    // case 'buy':
-    //   break;
     // case 'swarm':
     //   break
-    // case 'remove':
-    //   break;
 
     default:
       text += `  run botnet.js help                          - displays this help text\n`
@@ -273,71 +267,6 @@ async function swarm(ns, target) {
   }
 }
 
-// /**
-//  * Tell the botnet to swarm the specified server.
-//  * 
-//  * @param {NS} ns         - NetScript library
-//  * @param {string} target - the server to send the botnet after
-//  */
-// async function swarm(ns, target) {
-
-//   // find target and chance or display help
-//   let chance = ns.args[2];
-//   if (!target) {
-//     help(ns, 'swarm');
-//     return false;
-//   }
-
-//   // knock the door down
-//   knock(ns, target);
-
-//   // tell all servers to swarm the target
-//   let servers = ns.getPurchasedServers();
-//   for (const server of servers) {
-
-//     // kill all currently running processes
-//     ns.killall(server);
-    
-//     // copy the swarm to the server
-//     ns.scp(swarmScript, server)
-//     ns.scp(weakenerScript, server);
-//     ns.scp(growerScript, server);
-//     ns.scp(hackerScript, server);
-
-//     // start the swarm directed at target
-//     if (ns.exec(swarmScript, server, 1, target) != 0) {
-//       ns.tprintf(`started swarming ${target} from ${server}`);
-//     }
-
-//     // hold for 5 seconds to stagger
-//     await ns.sleep(getTimeout());
-//   }
-// }
-
-// async function swarm(ns, target) {
-
-//   // find target and chance or display help
-//   let chance = ns.args[2];
-//   if (!target || !chance) {
-//     help(ns, 'swarm');
-//     return false;
-//   }
-
-//   // knock the door down
-//   knock(ns, target);
-
-//   // tell all servers to swarm the target
-//   let servers = ns.getPurchasedServers();
-//   for (const server of servers) {
-//     if (ns.killall(server)) {
-//       ns.tprintf(`killed all procs on ${server}`)
-//     }
-//     deploy(ns, server, target, chance);
-//     await ns.sleep(10000);
-//   }
-// }
-
-
 /**
  * Remove a server.
  * 
@@ -458,10 +387,3 @@ async function findRam(ns) {
   // return these values
   return { low, high, target };
 }
-
-// /**
-//  * Generate a random timeout value between 1 and 3 seconds.
-//  */
-// function getTimeout() {
-//   return (Math.floor((Math.random() * 100)) * 20) + 1000;
-// }
