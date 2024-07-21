@@ -7,7 +7,6 @@
 
 import { knock } from './knock';
 
-
 // script file names
 const wScript = "dron3Weaken3r.js";
 const gScript = "dron3Grow3r.js";
@@ -18,7 +17,7 @@ const thisScript = "swarm.js";
 const targetProcs = 512;
 
 /**
- * 
+ * Control the swarm.
  * 
  * @param {NS} ns - NetScript.
  */
@@ -129,23 +128,31 @@ function help(ns) {
   ns.tprintf(msg);
 }
 
+/**
+ * Displays info about the swarm.
+ * 
+ * @param {NS} ns - NetScript.
+ */ 
 function info(ns) {
   let bees = getBees(ns);
   let msg = `bees:\n`;
   msg += `  weakeners: ${bees.weakeners.length}\n`;
   msg += `  growers: ${bees.growers.length}\n`;
   msg += `  hackers: ${bees.hackers.length}\n`;
+  msg += `  target(s): ${bees.targets}\n`;
   ns.tprintf(msg);
 }
 
 /**
  * The Queen controls the swarm.
+ * 
  * @class
  */
 class Queen {
   
   /**
    * Creates a queen using values set at creation.
+   * 
    * @param {NS} ns - NetScript
    */
   constructor(ns) {
@@ -168,6 +175,7 @@ class Queen {
   }
 
   /**
+   * 
    * 
    * @param {string} target - The target of the attack.
    */
@@ -210,6 +218,7 @@ class Queen {
 class Swarm {
 
   /**
+   * 
    * 
    * @param {NS} ns          - NetScript.
    * @param {string} target  - The swarm's target.
@@ -335,13 +344,22 @@ export function getTime(ns, target) {
   return {w, g, h}
 }
 
+
+/**
+ * 
+ * 
+ * @param {NS} ns  - NetScript.
+ * @returns 
+ */
 function getBees(ns) {
   
   let allTheBees = ns.ps();
   let weakeners = [];
   let growers = [];
   let hackers = [];
+  let targets = [];
 
+  // grab the bee's pids
   for (const bee of allTheBees) {
     switch (bee.filename) {
       case wScript:
@@ -354,7 +372,12 @@ function getBees(ns) {
         hackers.push(bee.pid);
         break;
     }
+
+    // find the target(s)
+    if (!targets.includes(bee.args[0])) {
+      targets.push(bee.args[0])
+    }
   }
 
-  return { weakeners, growers, hackers };
+  return { weakeners, growers, hackers, targets };
 }
