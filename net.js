@@ -47,7 +47,11 @@ function help(ns) {
   ns.tprintf(msg);
 }
 
-
+/**
+ * Represents all of my hacknet nodes.  Offers interfaces for buying and upgrading.
+ * 
+ * @class
+ */
 class HackNet {
 
   /**
@@ -66,18 +70,20 @@ class HackNet {
    */
   payOff() {
 
-    // get 
+    // get info on hacknet costs and profits
     let moneySources = this.ns.getMoneySources().sinceInstall;
     let cost = moneySources.hacknet_expenses;
     let gains = moneySources.hacknet;
     let left = cost - gains;
 
+    // calculate persecond production and time until paid off
     let perSec = 0;
     for (let i = 0; i < this.curNodes; i++) {
       perSec += this.ns.hacknet.getNodeStats(i).production;
     }
     let timeLeft = left / perSec;
 
+    // display a message detailing this info.
     let msg = `spent $${this.ns.formatNumber(cost)} => `;
     msg += `$${this.ns.formatNumber(gains)} made @ `;
     msg += `$${this.ns.formatNumber(perSec)} per sec = `;
@@ -86,6 +92,9 @@ class HackNet {
     this.ns.tprintf(msg);
   }
 
+  /**
+   * Display detailed information about each hacknet node.
+   */ 
   info() {
 
     // loop through every hacknet node
@@ -110,6 +119,9 @@ class HackNet {
     this.payOff();
   }
 
+  /**
+   * Upgrade all the hacknode's stats to max.
+   */
   upgrade() {
 
     // loop through every hacknet node

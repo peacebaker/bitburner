@@ -6,7 +6,11 @@
  */
 
  
-/** @param {NS} ns - NetScript. */
+/** 
+ * The utils script functions as a library and interface for a few commonly used commands.
+ * 
+ * @param {NS} ns - NetScript. 
+ */
 export async function main(ns) {
 
   // execute requested command
@@ -27,6 +31,11 @@ export async function main(ns) {
   }
 }
 
+/**
+ * Display the script's help text.
+ * 
+ * @param {NS} ns 
+ */
 function help(ns) {
 
   let subcmd = ns.args[1];
@@ -50,6 +59,7 @@ function help(ns) {
 
 /**
  * Scan all servers on the network for interesting info.
+ * 
  * @param {NS} ns - NetScript.
  */
 export function scan(ns) {
@@ -116,6 +126,7 @@ export function scan(ns) {
 
 /** 
  * Get an array of all servers on the network.
+ * 
  * @param {NS} ns - NetScript.
  * @returns {Server[]}
  */
@@ -156,6 +167,7 @@ export function getServers(ns) {
 
 /**
  * Download all .lit files on the network.
+ * 
  * @param {NS} ns - NetScript.
  */
 export function getLit(ns) {

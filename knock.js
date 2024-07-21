@@ -6,7 +6,11 @@
 
 import { getServers } from './utils.js';
 
-/** @param {NS} ns */
+/** 
+ * Knock on the door with a large battering ram.
+ * 
+ * @param {NS} ns - NetScript.
+ */
 export async function main(ns) {
   const target = ns.args[0];
   knock(ns, target);
@@ -20,7 +24,11 @@ export async function main(ns) {
   }
 }
 
-/** @param {NS} ns */
+/** 
+ * Attempt to open the server's ports and gain root access.
+ * 
+ * @param {NS} ns - NetScript.
+ */
 export async function knock(ns, target) {
 
   // get the server's hostname and info
