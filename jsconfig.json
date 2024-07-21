@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "checkJs": true,
+    "noEmit": true,
+    "target": "ES6",
+    "module": "commonjs",
+    "allowJs": true,
+    "baseUrl": ".",
+    "paths": {
+      "*": [
+        "bitburner-src/src/@types/*",
+      ]
+    },
+    "typeRoots": [
+      "bitburner-src/src/@types",
+    ]
+  },
+  "include": [
+    "bitburner-src/src/**/*"
+  ]
+}
