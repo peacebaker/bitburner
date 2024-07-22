@@ -56,7 +56,7 @@ function help(ns) {
       msg += `  run utils.js help - Display this help message.\n`;
       msg += `  run utils.js scan * Display information about all available servers on the net.\n`;
       msg += `  run utils.js lit  - Find and download all .lit files on across all available servers.\n`;
-      msg += `  run utils.js cct  - Find and download all .cct files on across all available servers.\n`;
+      msg += `  run utils.js cct  - Find .cct files on across all available servers.\n`;
   }
   
   ns.tprintf(msg);
@@ -214,8 +214,7 @@ export function getCct(ns) {
     // pull every file to home
     for (const file of files) {
       if (!got.includes(files)) {
-        ns.tprintf(`downloading ${file} from ${server.hostname}`);
-        ns.scp([file], 'home', server.hostname);
+        ns.tprintf(`found ${file} on ${server.hostname}`);
         got.push(file);
       }
     }
