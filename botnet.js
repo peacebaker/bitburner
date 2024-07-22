@@ -30,6 +30,7 @@ export async function main(ns) {
       await buy(ns);
       break;
 
+    case 'update':
     case 'upgrade':
       upgrade(ns);
       break;
