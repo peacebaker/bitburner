@@ -6,7 +6,7 @@
 
 
 // 
-const startRam = 128;
+const startRam = 32;
 
 // script names
 const weakenerScript = "dron3Weaken3r.js";
