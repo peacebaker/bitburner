@@ -4,7 +4,6 @@
  * @typedef {import('./bitburner-src/src/ScriptEditor/NetscriptDefinitions').NS} NS
  */
 
-import { knock } from './knock.js';
 
 // 
 const startRam = 128;
@@ -244,9 +243,6 @@ async function swarm(ns, target) {
     help(ns, 'swarm');
     return false;
   }
-
-  // knock the door down
-  knock(ns, target);
 
   // tell all servers to swarm the target
   let servers = ns.getPurchasedServers();
