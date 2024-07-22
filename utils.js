@@ -25,6 +25,10 @@ export async function main(ns) {
       getLit(ns);
       return;
 
+    case "cct":
+      getCct(ns);
+      return;
+
     default:
       help(ns);
       return;
@@ -52,6 +56,7 @@ function help(ns) {
       msg += `  run utils.js help - Display this help message.\n`;
       msg += `  run utils.js scan * Display information about all available servers on the net.\n`;
       msg += `  run utils.js lit  - Find and download all .lit files on across all available servers.\n`;
+      msg += `  run utils.js cct  - Find and download all .cct files on across all available servers.\n`;
   }
   
   ns.tprintf(msg);
@@ -190,3 +195,50 @@ export function getLit(ns) {
     }
   }
 }
+
+/**
+ * Download all .lit files on the network.
+ * 
+ * @param {NS} ns - NetScript.
+ */
+export function getCct(ns) {
+
+  // keep track of downloaded files
+  let got = [];
+
+  // search every server for .lit files
+  let servers = getServers(ns);
+  for (const server of servers) {
+    let files = ns.ls(server.hostname, ".cct");
+
+    // pull every file to home
+    for (const file of files) {
+      if (!got.includes(files)) {
+        ns.tprintf(`downloading ${file} from ${server.hostname}`);
+        ns.scp([file], 'home', server.hostname);
+        got.push(file);
+      }
+    }
+  }
+}
+
+// /**
+//  * Weaken every available server to minimum sercurity.
+//  * 
+//  * @param {NS} ns - NetScript.
+//  */
+// export function doorbell(ns) {
+
+//   // 
+//   let servers = getServers(ns);
+//   let maxRam = ns.getServerMaxRam('home') * (1/32);
+//   let myRam = ns.getScriptRam(ns.getRunningScript());
+//   let threads = (maxRam / myRam) + 1
+
+//   // 
+//   for (const server of servers) {
+//     if (ns.getServerSecurityLevel(server.hostname) < ns.getServerMinSecurityLevel(server.hostname) {
+//       ns.weaken()
+//     }
+//   }
+// }
