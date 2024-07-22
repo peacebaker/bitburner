@@ -4,7 +4,6 @@
  * @typedef {import('./bitburner-src/src/ScriptEditor/NetscriptDefinitions').NS} NS
  */
 
-
 import { knock } from './knock';
 
 // script file names
@@ -79,6 +78,10 @@ export async function main(ns) {
     // make sure we have root access
     if (!ns.hasRootAccess(target)) {
       knock(ns, target);
+    }
+    if (!ns.hasRootAccess(target)) {
+      ns.tprintf(`cannot hack ${target}, no root access`);
+      return;
     }
 
     // adjust the appropriate swarm to the requested number
@@ -175,7 +178,7 @@ class Queen {
   }
 
   /**
-   * 
+   * Analyzes the target server for attack-related information.
    * 
    * @param {string} target - The target of the attack.
    */
@@ -215,15 +218,20 @@ class Queen {
   }
 }
 
+/**
+ * The swarm represents all dron3 processes, aka bees.
+ * 
+ * @class
+ */
 class Swarm {
 
   /**
-   * 
+   * Initialize the swarm control object.
    * 
    * @param {NS} ns          - NetScript.
    * @param {string} target  - The swarm's target.
    * @param {number} threads - The number of threads per process.
-   * @param {number} num     - The number of dron3s in the swarm.
+   * @param {number} num     - The target number of dron3s in the swarm.
    */
   constructor(ns, target, threads, num) {
     this.ns = ns;
@@ -234,6 +242,9 @@ class Swarm {
     this.pids = [];
   }
 
+  /**
+   * Display information about the swarm.
+   */
   info() {
     this.ns.tprintf(`target: ${this.target}`);
     this.ns.tprintf(`number: ${this.num}`);
@@ -241,7 +252,11 @@ class Swarm {
     this.ns.tprintf(`threads: ${this.threads}`);
   }
 
-
+  /**
+   * Spawn dron3s until the requested number is met.
+   * 
+   * @param {number} timeout - The amount of time to wait between spawning more dron3s.
+   */
   async swarm(timeout) {
     while (this.pids.length < this.num) {
       this.add();
@@ -249,7 +264,9 @@ class Swarm {
     }
   }
 
-  /** Kill all drones of this type. */
+  /** 
+   * Kill all drones of this type.  
+   */
   async killall() {
     for (const pid of this.pids) {
       this.ns.kill(pid);
