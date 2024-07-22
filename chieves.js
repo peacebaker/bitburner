@@ -12,6 +12,7 @@
 export async function main(ns) {
   // youllNeedUpgrade(ns);
   // folders(ns);
+  // killFolders(ns);
 }
 
 /**
@@ -24,6 +25,18 @@ function folders(ns) {
     ns.write(`fakes/fake${i}.js`);
   }
 }
+
+/**
+ * Removes the files created by the folders function.
+ * 
+ * @param {NS} ns 
+ */
+function killFolders(ns) {
+  for (let i = 1; i <= 30; i++) {
+    ns.rm(`fakes/fake${i}.js`);
+  }
+}
+
 
 /**
  * Gets the achievement "You'll need upgrade for this one." by loading every NetSCript available.
