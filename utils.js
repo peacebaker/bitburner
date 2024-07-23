@@ -220,24 +220,3 @@ export function getCct(ns) {
     }
   }
 }
-
-// /**
-//  * Weaken every available server to minimum sercurity.
-//  * 
-//  * @param {NS} ns - NetScript.
-//  */
-// export function doorbell(ns) {
-
-//   // 
-//   let servers = getServers(ns);
-//   let maxRam = ns.getServerMaxRam('home') * (1/32);
-//   let myRam = ns.getScriptRam(ns.getRunningScript());
-//   let threads = (maxRam / myRam) + 1
-
-//   // 
-//   for (const server of servers) {
-//     if (ns.getServerSecurityLevel(server.hostname) < ns.getServerMinSecurityLevel(server.hostname) {
-//       ns.weaken()
-//     }
-//   }
-// }
