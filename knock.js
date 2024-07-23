@@ -27,7 +27,8 @@ export async function main(ns) {
 /** 
  * Attempt to open the server's ports and gain root access.
  * 
- * @param {NS} ns - NetScript.
+ * @param {NS} ns         - NetScript.
+ * @param {string} target - the server's name.
  */
 export async function knock(ns, target) {
 
