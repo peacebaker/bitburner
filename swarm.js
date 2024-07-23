@@ -4,7 +4,7 @@
  * @typedef {import('./bitburner-src/src/ScriptEditor/NetscriptDefinitions').NS} NS
  */
 
-import { knock } from './knock';
+import { knock } from './knock.js';
 
 // script file names
 const wScript = "dron3Weaken3r.js";
@@ -151,7 +151,7 @@ function info(ns) {
  * 
  * @class
  */
-class Queen {
+export class Queen {
   
   /**
    * Creates a queen using values set at creation.
@@ -271,11 +271,20 @@ class Swarm {
     for (const pid of this.pids) {
       this.ns.kill(pid);
     }
+    this.pids = [];
   }
 }
 
-class WeakenerSwarm extends Swarm {
+export class WeakenerSwarm extends Swarm {
 
+  /**
+   * All the weakener drones on the current server.
+   * 
+   * @param {NS} ns          - NetScript.
+   * @param {string} target  - The targer server's name.
+   * @param {number} threads - The number of threads per each drone.
+   * @param {number} num     - The number of drones to spawn.
+   */
   constructor(ns, target, threads, num) {
     super(ns, target, threads, num);
     this.pids = getBees(ns).weakeners;
@@ -296,7 +305,15 @@ class WeakenerSwarm extends Swarm {
   }
 }
 
-class GrowerSwarm extends Swarm {
+  /**
+   * All the grower drones on the current server.
+   * 
+   * @param {NS} ns          - NetScript.
+   * @param {string} target  - The targer server's name.
+   * @param {number} threads - The number of threads per each drone.
+   * @param {number} num     - The number of drones to spawn.
+   */
+export class GrowerSwarm extends Swarm {
 
   constructor(ns, target, threads, num) {
     super(ns, target, threads, num);
@@ -318,7 +335,15 @@ class GrowerSwarm extends Swarm {
   }
 }
 
-class HackerSwarm extends Swarm {
+  /**
+   * All the hacker drones on the current server.
+   * 
+   * @param {NS} ns          - NetScript.
+   * @param {string} target  - The targer server's name.
+   * @param {number} threads - The number of threads per each drone.
+   * @param {number} num     - The number of drones to spawn.
+   */
+export class HackerSwarm extends Swarm {
 
   constructor(ns, target, threads, num) {
     super(ns, target, threads, num);
@@ -363,7 +388,7 @@ export function getTime(ns, target) {
 
 
 /**
- * 
+ * Get the pids of all drones, sorted by type.
  * 
  * @param {NS} ns  - NetScript.
  * @returns 
