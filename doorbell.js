@@ -54,7 +54,7 @@ export async function main(ns) {
     }
 
     // print the new security level and kill the drone
-    ns.tprintf(`doorbell.js: lowered ${server.hostname} security => ${curSec.toLocaleString('en-US')} / ${minSec}`);
+    ns.tprintf(`doorbell.js: ${server.hostname} security => ${curSec.toLocaleString('en-US')} / ${minSec}`);
     wSwarm.killall();
   }
 }
