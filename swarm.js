@@ -142,7 +142,14 @@ function info(ns) {
   msg += `  weakeners: ${bees.weakeners.length}\n`;
   msg += `  growers: ${bees.growers.length}\n`;
   msg += `  hackers: ${bees.hackers.length}\n`;
-  msg += `  target(s): ${bees.targets}\n`;
+  msg += `  target(s): `;
+  for (let i = 0; i < bees.targets.length; i++) {
+    if (i < bees.targets.length - 1) {
+      msg += `${bees.targets[i]}, `;
+    } else {
+      msg += `${bees.targets[i]}\n`;
+    }
+  }
   ns.tprintf(msg);
 }
 
@@ -164,7 +171,7 @@ export class Queen {
     this.server = this.ns.getServer(this.me);
     this.ramOffset = 0;
     if (this.me === "home") {
-      this.ramOffset = 64;
+      // this.ramOffset = 64;
     }
     this.maxRam = this.server.maxRam;
     this.usedRam = this.server.ramUsed;
@@ -212,8 +219,8 @@ export class Queen {
     msg += `  weaken time: ${times.w.toLocaleString('en-US')}\n`;
     msg += `  grow time ${times.g.toLocaleString('en-US')}\n`;
     msg += `  hack time: ${times.h.toLocaleString('en-US')}\n`;
-    info(this.ns);
 
+    info(this.ns);
     this.ns.tprintf(msg);
   }
 }
@@ -416,8 +423,10 @@ function getBees(ns) {
     }
 
     // find the target(s)
-    if (!targets.includes(bee.args[0])) {
-      targets.push(bee.args[0])
+    if (bee.args[0]) {
+      if (!targets.includes(bee.args[0])) {
+        targets.push(bee.args[0])
+      }
     }
   }
 
