@@ -1,16 +1,13 @@
+
 /**
  * Import type definitions from bitburner source.
  * @ts-check
  * @typedef {import('./bitburner-src/src/ScriptEditor/NetscriptDefinitions').NS} NS
  */
 
-import { rainbow } from './achievements/rainbow.js';
-
 /**
- * Get me some 'chieves.
- * 
- * @param {NS} ns - NetScript.
+ * Rainbow table?
  */
-export async function main(ns) {
-  rainbow(ns);
+export async function rainbow(ns) {
 }
+
