@@ -267,7 +267,9 @@ class Swarm {
   async swarm(timeout) {
     while (this.pids.length < this.num) {
       this.add();
-      await this.ns.sleep(timeout);
+      if (this.pids.length != this.num) {
+        await this.ns.sleep(timeout);
+      }
     }
   }
 
