@@ -5,16 +5,22 @@
  */
 
 /**
+ * List all public Netscript functions.
+ * 
+ * @param {NS} ns
+ */
+export function list(ns) {
+  for (const key in ns) {
+    ns.tprintf(`ns.${key};`);
+  }
+}
+
+/**
  * Gets the achievement "You'll need upgrade for this one." by loading every NetSCript available.
  * 
  * @param {NS} ns
  */
 export function moreRam(ns) {
-
-  // get the list
-    for (const key in ns) {
-    ns.tprintf(`ns.${key};`);
-  }
 
   // load all the things
   ns.singularity;

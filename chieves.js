@@ -4,7 +4,7 @@
  * @typedef {import('./bitburner-src/src/ScriptEditor/NetscriptDefinitions').NS} NS
  */
 
-import { rainbow } from './achievements/rainbow.js';
+import { rainbow } from './chieves/rainbow.js';
 
 /**
  * Get me some 'chieves.
