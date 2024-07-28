@@ -12,5 +12,5 @@ import { rainbow } from './chieves/rainbow.js';
  * @param {NS} ns - NetScript.
  */
 export async function main(ns) {
-  rainbow(ns);
+  await rainbow(ns);
 }
