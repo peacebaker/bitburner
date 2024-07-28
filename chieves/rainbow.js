@@ -5,7 +5,8 @@
  */
 
 /**
- * Rainbow table?
+ * First attempt at trying to create the input needed for a rainbow table, but I've run out of memory.
+ * Also, JavaScript isn't the language to do this.
  */
 export async function rainbow(ns) {
 
