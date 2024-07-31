@@ -261,3 +261,45 @@ export function playerInfo(ns) {
   // ns.tprintf(`  strength: ${player.exp.strength}\n`);
 }
 
+/**
+ * Take a number of seconds and format it into a readable string.
+ * 
+ * @param {number} seconds 
+ * @returns 
+ */
+export function formatTime(seconds) {
+  let days = 0;
+  let hours = 0;
+  let mins = 0;
+  let msg = '';
+
+  // extract the total number of days
+  const oneDay = 60 * 60 * 24;
+  if (seconds > oneDay) {
+    days = seconds / oneDay;
+    seconds %= oneDay;
+    msg += `${days}d `;
+  }
+
+  // extract the total number of hours
+  const oneHour = 60 * 60;
+  if (seconds > oneHour) {
+    hours = seconds / oneHour;
+    seconds %= oneHour;
+    msg += `${hours}h `;
+  }
+
+  // extract the total number of minutes
+  const oneMin = 60;
+  if (seconds > oneMin) {
+    mins = seconds / oneMin;
+    seconds %= oneMin;
+    msg += `${mins}m `
+  }
+
+  // extract the total number of seconds
+  msg += `${seconds}s`
+
+  // return total as a string
+  return msg;
+}
