@@ -29,6 +29,11 @@ export async function main(ns) {
       getCct(ns);
       return;
 
+    case "me":
+    case "player":
+      playerInfo(ns);
+      return;
+
     default:
       help(ns);
       return;
@@ -57,6 +62,7 @@ function help(ns) {
       msg += `  run utils.js scan * Display information about all available servers on the net.\n`;
       msg += `  run utils.js lit  - Find and download all .lit files on across all available servers.\n`;
       msg += `  run utils.js cct  - Find .cct files on across all available servers.\n`;
+      msg += `  run utils.js me   - Display player information.\n`;
   }
   
   ns.tprintf(msg);
@@ -220,3 +226,38 @@ export function getCct(ns) {
     }
   }
 }
+
+/**
+ * @param {NS} ns - NetScript.
+ */
+export function playerInfo(ns) {
+
+  // get player info
+  let player = ns.getPlayer();
+
+  // hidden info
+  ns.tprintf(`city: ${player.city}\n`);
+  ns.tprintf(`entropy: ${player.entropy}\n`);
+  ns.tprintf(`killed: ${player.numPeopleKilled}\n`);
+  ns.tprintf(`karma: ${player.karma}\n`);
+  
+  // // factions
+  // ns.tprintf(`factions: ${player.factions}\n`);
+  // let msg = 'factions: ';
+  // for (const faction of player.factions) {
+  //   msg += `${faction}, `;
+  // }
+  // ns.tprintf(msg);
+  
+  // // player stats
+  // ns.tprintf('skills:\n');
+  // ns.tprintf(`  hp: ${player.hp.current} / ${player.hp.max}\n`);
+  // ns.tprintf(`  agility: ${player.exp.agility}\n`);
+  // ns.tprintf(`  charisma: ${player.exp.charisma}\n`);
+  // ns.tprintf(`  defense: ${player.exp.defense}\n`);
+  // ns.tprintf(`  dexterity: ${player.exp.dexterity}\n`);
+  // ns.tprintf(`  hacking: ${player.exp.hacking}\n`);
+  // ns.tprintf(`  intelligence: ${player.exp.intelligence}\n`);
+  // ns.tprintf(`  strength: ${player.exp.strength}\n`);
+}
+
