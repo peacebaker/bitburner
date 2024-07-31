@@ -202,13 +202,13 @@ export class Queen {
     let minSec = this.ns.getServerMinSecurityLevel(target);
     let curSec = this.ns.getServerSecurityLevel(target);
 
-    let msg = `${this.me} specs:\n`;
+    let msg = `${this.me}:\n`;
     msg += `  max ram: ${this.ns.formatRam(this.maxRam)}\n`;
     msg += `  used ram: ${this.ns.formatRam(this.usedRam)}\n`;
     msg += `  free ram: ${this.ns.formatRam(this.freeRam)}\n`;
     msg += `  threads: ${this.threads.toLocaleString('en-US')}\n`;
     
-    msg += `${target} specs\n`;
+    msg += `${target}:\n`;
     msg += `  max cash: ${this.ns.formatNumber(maxCash)}\n`;
     msg += `  cur cash: ${this.ns.formatNumber(curCash)}\n`;
     msg += `  cur hack: ${this.ns.formatNumber(gains)}\n`
@@ -262,7 +262,8 @@ class Swarm {
   /**
    * Spawn dron3s until the requested number is met.
    * 
-   * @param {number} timeout - The amount of time to wait between spawning more dron3s.
+   * @param {number} timeout - The amount of time to wait between spawning more dron3s.  Children don't need timeouts, 
+   *                           and will ignore them if they're provided.
    */
   async swarm(timeout) {
     while (this.pids.length < this.num) {
