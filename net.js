@@ -13,49 +13,38 @@ export async function main(ns) {
 
   // check the command and execute the appropriate methods.
   let cmd = ns.args[0];
-  const hackNet = new HackNet(ns);
+
+  // pick between nodes or servers
+  // const hackNet = new HackNetNodes(ns);
+  const hackNet = new HackNetServers(ns);
   switch (cmd) {
-    case "buy":
-      hackNet.buy();
-      return;
+
+    // case "buy":
+    //   hackNet.buy();
+    //   return;
 
     case "info":
       hackNet.info();
       return;
 
-    case "upgrade":
-      hackNet.upgrade();
-      return;
+    // case "upgrade":
+    //   hackNet.upgrade();
+    //   return;
 
     default:
-      help(ns);
+      hackNet.help();
       return;
   } 
 }
 
-/**
- * Prints a help message to the terminal.
- * 
- * @param {NS} ns - NetScript.
- */
-function help(ns) {
-  let msg = `net.js usage:\n`;
-  msg += `  run net.js help    - Display this help text.\n`;
-  msg += `  run net.js info    - Display information about all current hacknet nodes\n`
-  msg += `  run net.js buy     - Buy a hacknet node.\n`
-  msg += `  run net.js upgrade - Upgrade all hacknet nodes to max.\n`
-  ns.tprintf(msg);
-}
 
 /**
  * Represents all of my hacknet nodes.  Offers interfaces for buying and upgrading.
- * 
- * @class
  */
-class HackNet {
+class HackNetNodes {
 
   /**
-   * Creates a HackNet object, offering easy control of hacknet nodes.
+   * Creates a HackNetNode object, offering easy control of hacknet nodes.
    * 
    * @param {NS} ns - NetScript.
    */
@@ -63,6 +52,33 @@ class HackNet {
     this.ns = ns;
     this.maxNodes = ns.hacknet.maxNumNodes();
     this.curNodes = ns.hacknet.numNodes();
+  }
+
+  /**
+   * Prints a help message to the terminal.
+   * 
+   * @param {NS} ns - NetScript.
+   */
+  help() {
+    let msg = `net.js usage:\n`;
+    msg += `  run net.js help    - Display this help text.\n`;
+    msg += `  run net.js info    - Display information about all current hacknet nodes\n`
+    msg += `  run net.js buy     - Buy a hacknet node.\n`
+    msg += `  run net.js upgrade - Upgrade all hacknet nodes to max.\n`
+    this.ns.tprintf(msg);
+  }
+
+  /**
+   * Display detailed information about each hacknet node.
+   */ 
+  info() {
+
+    // loop through every hacknet node
+    for (let i = 0; i < this.curNodes; i++) {
+      let stats = this.ns.hacknet.getNodeStats(i);
+      this.ns.tprintf(`${stats.name} => {level: ${stats.level}, ram: ${stats.ram}, cores: ${stats.cores}}`);
+    }
+    this.payOff();
   }
 
   /**
@@ -92,18 +108,7 @@ class HackNet {
     this.ns.tprintf(msg);
   }
 
-  /**
-   * Display detailed information about each hacknet node.
-   */ 
-  info() {
 
-    // loop through every hacknet node
-    for (let i = 0; i < this.curNodes; i++) {
-      let stats = this.ns.hacknet.getNodeStats(i);
-      this.ns.tprintf(`${stats.name} => {level: ${stats.level}, ram: ${stats.ram}, cores: ${stats.cores}}`);
-    }
-    this.payOff();
-  }
 
   /**
    * Buy a single hacknet node.
@@ -160,5 +165,68 @@ class HackNet {
 
     // display time til paid off
     this.payOff();
+  }
+}
+
+/**
+ * Represents all of my hacknet nodes.  Offers interfaces for buying and upgrading.
+ */
+class HackNetServers {
+
+  /**
+   * Creates a HackNetServer object, offering easy control of hacknet nodes.
+   * 
+   * @param {NS} ns - NetScript.
+   */
+  constructor(ns) {
+    this.ns = ns;
+
+    // get overall hacknet stats
+    this.maxNodes = ns.hacknet.maxNumNodes();
+    this.curNodes = ns.hacknet.numNodes();
+    this.maxHash = ns.hacknet.hashCapacity();
+    this.curHash = ns.hacknet.numHashes();
+
+    // get individual node stats
+    this.servers = []
+    for (let i = 0; i < this.curNodes; i++) {
+      this.servers.push(ns.hacknet.getNodeStats(i));
+    }
+  }
+
+  /**
+   * Prints a help message to the terminal.
+   * 
+   * @param {NS} ns - NetScript.
+   */
+  help() {
+    let msg = `net.js usage:\n`;
+    msg += `  run net.js help    - Display this help text.\n`;
+    msg += `  run net.js info    - Display information about all hacknet servers.\n`
+    msg += `  run net.js upgrade - Upgrade the network by either purchasing or upgrading a server.\n`
+    // msg += `  run net.js buy     - Buy a hacknet node.\n`
+    this.ns.tprintf(msg);
+  }
+
+  info() {
+    
+    // start with server specific info
+    let msg = 'hacknet:\n';
+    for (const server of this.servers) {
+      msg += `  ${server.name} => {`
+      msg += `prod: ${server.production.toLocaleString('en-US')}, `;
+      msg += `cap: ${server.hashCapacity}, `;
+      msg += `level: ${server.level}, `;
+      msg += `ram: ${server.ramUsed} / ${server.ram}, `;
+      msg += `cores: ${server.cores}, `;
+      msg += `cache: ${server.cache}}\n`;
+    }
+
+    // add general info
+    msg += `servers: ${this.curNodes} / ${this.maxNodes}\n`;
+    msg += `hashes: ${this.curHash} / ${this.maxHash}\n`;
+
+    // print to terminal
+    this.ns.tprintf(msg);
   }
 }
