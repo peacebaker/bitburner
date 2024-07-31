@@ -72,7 +72,7 @@ class HackNet {
 
     // get info on hacknet costs and profits
     let moneySources = this.ns.getMoneySources().sinceInstall;
-    let cost = moneySources.hacknet_expenses;
+    let cost = Math.abs(moneySources.hacknet_expenses);
     let gains = moneySources.hacknet;
     let left = cost - gains;
 
