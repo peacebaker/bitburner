@@ -53,16 +53,16 @@ function help(ns) {
   switch (subcmd) {
     case "scan":
       msg += `utils.js scan options:\n`;
-      msg += `  run utils.js scan -c - Sort by max cash.\n`
-      msg += `  run utils.js scan -h - Sort by required hacking level.\n`
+      msg += `  run utils.js scan -c - sort by max cash\n`
+      msg += `  run utils.js scan -h - sort by required hacking level\n`
       break;
     default:
       msg += `utils.js usage:\n`;
-      msg += `  run utils.js help - Display this help message.\n`;
-      msg += `  run utils.js scan * Display information about all available servers on the net.\n`;
-      msg += `  run utils.js lit  - Find and download all .lit files on across all available servers.\n`;
-      msg += `  run utils.js cct  - Find .cct files on across all available servers.\n`;
-      msg += `  run utils.js me   - Display player information.\n`;
+      msg += `  run utils.js help - display this help message\n`;
+      msg += `  run utils.js scan * display information about all available servers on the net\n`;
+      msg += `  run utils.js lit  - find and download all .lit files on across all available servers\n`;
+      msg += `  run utils.js cct  - find .cct files on across all available servers\n`;
+      msg += `  run utils.js me   - display player information\n`;
   }
   
   ns.tprintf(msg);
