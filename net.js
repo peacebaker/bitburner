@@ -1,8 +1,8 @@
 /**
  * Import type definitions from bitburner source.
  * @ts-check
- * @typedef {import('./bitburner-src/src/ScriptEditor/NetscriptDefinitions').NS} NS
- * @typedef {import('./bitburner-src/src/ScriptEditor/NetscriptDefinitions').NodeStats} NodeStats
+ * @typedef {import('./bitburner-src/src/ScriptEditor/NetscriptDefinitions.js').NS} NS
+ * @typedef {import('./bitburner-src/src/ScriptEditor/NetscriptDefinitions.js').NodeStats} NodeStats
  */
 
 import { formatTime } from './utils.js';
@@ -118,10 +118,10 @@ class HackNetNodes extends HackNet {
    */
   help() {
     let msg = `net.js usage:\n`;
-    msg += `  run net.js help    - Display this help text.\n`;
-    msg += `  run net.js info    - Display information about all current hacknet nodes\n`
-    msg += `  run net.js buy     - Buy a hacknet node.\n`
-    msg += `  run net.js upgrade - Upgrade all hacknet nodes to max.\n`
+    msg += `  run net.js help    - display this help text\n`;
+    msg += `  run net.js info    - display information about all current hacknet nodes\n`
+    msg += `  run net.js buy     - buy a hacknet node\n`
+    msg += `  run net.js upgrade - upgrade all hacknet nodes to max\n`
     this.ns.tprintf(msg);
   }
 
@@ -221,18 +221,24 @@ class HackNetServers extends HackNet {
   /**
    * Prints a help message to the terminal.
    */
-  help() {
-    let msg = '';
-    let upgrade = this.ns.args[1] ? this.ns.args[1] : "";
+  help(topic) {
+
+    // generate help text
+    topic = topic ? topic : 'general';
+    let msg = `net.js: ${topic} usage\n`
+
     switch (upgrade) {
 
+      case "spend":
+        msg += `  run net.js spend cash [num?]   - trade hashes for cash, defaults to 1 transaction\n`;
+        msg += `  run net.js min [target] [num?] - lower the target server's minimum security level\n `;
+        msg += `  run net.js max [target] [num?] - raise the target server's max money available\n`;
 
       default:
-        msg += `net.js usage:\n`;
-        msg += `  run net.js help                     - Display this help text.\n`;
-        msg += `  run net.js info                     - Display information about all hacknet servers.\n`
-        msg += `  run net.js upgrade                  - Upgrade the network by either purchasing or upgrading a server.\n`
-        msg += `  run net.js spend [upgrade] [amount] * Upgrade the network by either purchasing or upgrading a server.\n`
+        msg += `  run net.js help            - display this help text\n`;
+        msg += `  run net.js info            - display information about all hacknet servers\n`
+        msg += `  run net.js upgrad          - upgrade the network by either purchasing or upgrading a server\n`
+        msg += `  run net.js spend [upgrade] * spend hashes on various upgrades\n`
 
         break;
     }
@@ -278,15 +284,18 @@ class HackNetServers extends HackNet {
    * Spends hacknet hashes.
    */
   spend() {
-    let upgrade = this.ns.args[1] ? this.ns.args[1] : "";
-    let amount = this.ns.args[2] ? this.ns.args[2] : 1;
-
+    
     // 
+    let num = 1;
+    let upgrade = this.ns.args[1] ? this.ns.args[1] : "";
     switch (upgrade) {
+
+      // 
       case "cash":
+        num = this.ns.args[2] ? this.ns.args[2] : 1;
         let total = 0;  
         let spent = 0;
-        for (let i = 0; i < amount; i++) {
+        for (let i = 0; i < num; i++) {
           if (this.ns.hacknet.spendHashes("Sell for Money")) {
             total += 1000000;
             spent += 4;
@@ -295,6 +304,18 @@ class HackNetServers extends HackNet {
         this.ns.tprintf(`spent ${spent} hashes on a total of $${this.ns.formatNumber(total)}`);
         this.ns.tprintf(`hashes: ${(this.curHash - spent).toLocaleString('en-US')} / ${this.maxHash}`);
         return;
+
+      case "min":
+
+        // 
+        let target = this.ns.args[2];
+        if (!target) {
+
+        }
+
+        // 
+        num = this.ns.args[3] ? this.ns.args[3] : 1;
+
 
       default:
         this.help("spend");
