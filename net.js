@@ -340,7 +340,7 @@ class HackNetServers extends HackNet {
     let bestUpgrade;
     for (let i = 0; i < this.curNodes; i++) {
       let server = this.servers[i];
-      let upgrade = this._findIdealUpgrade(server);
+      let upgrade = this.#findIdealUpgrade(server);
       upgrades.push(upgrade);
 
       // 
@@ -419,7 +419,7 @@ class HackNetServers extends HackNet {
    * 
    * @param {NodeStats} server - The 
    */
-  _findIdealUpgrade(server) {
+  #findIdealUpgrade(server) {
 
     // find index number and current hash rate
     let index = Number(server.name.replace("hacknet-server-", ""));
