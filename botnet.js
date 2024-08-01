@@ -21,6 +21,12 @@ const utilsScript = "utils.js";
  */
 export async function main(ns) {
 
+  // some bitnodes don't allow us to purchase servers
+  if (ns.getPurchasedServerLimit() === 0) {
+    ns.tprintf(`error: purchased servers disabled in this bitnode`);
+    return;
+  }
+
   // determine which command was requested and execute it
   let cmd = ns.args[0];
   let target = ns.args[1];
@@ -328,6 +334,7 @@ async function upgrade(ns) {
  * Find low, high, and target ram.
  * For some reason, we need to await this function.
  * 
+ * @param {NS} ns - NetScript library
  * @return {string, string, string} - low, high, target
  */
 async function findRam(ns) {
