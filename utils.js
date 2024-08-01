@@ -276,7 +276,7 @@ export function formatTime(seconds) {
   // extract the total number of days
   const oneDay = 60 * 60 * 24;
   if (seconds > oneDay) {
-    days = seconds / oneDay;
+    days = Math.floor(seconds / oneDay);
     seconds %= oneDay;
     msg += `${days}d `;
   }
@@ -284,7 +284,7 @@ export function formatTime(seconds) {
   // extract the total number of hours
   const oneHour = 60 * 60;
   if (seconds > oneHour) {
-    hours = seconds / oneHour;
+    hours = Math.floor(seconds / oneHour);
     seconds %= oneHour;
     msg += `${hours}h `;
   }
@@ -292,13 +292,13 @@ export function formatTime(seconds) {
   // extract the total number of minutes
   const oneMin = 60;
   if (seconds > oneMin) {
-    mins = seconds / oneMin;
+    mins = Math.floor(seconds / oneMin);
     seconds %= oneMin;
     msg += `${mins}m `
   }
 
   // extract the total number of seconds
-  msg += `${seconds}s`
+  msg += `${Math.floor(seconds)}s`
 
   // return total as a string
   return msg;
