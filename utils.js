@@ -55,6 +55,7 @@ function help(ns) {
       msg += `utils.js scan options:\n`;
       msg += `  run utils.js scan -c - sort by max cash\n`
       msg += `  run utils.js scan -h - sort by required hacking level\n`
+      msg += `  run utils.js scan -s - sort by minimum security level\n`
       break;
     default:
       msg += `utils.js usage:\n`;
