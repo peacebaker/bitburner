@@ -227,12 +227,13 @@ class HackNetServers extends HackNet {
     topic = topic ? topic : 'general';
     let msg = `net.js: ${topic} usage\n`
 
-    switch (upgrade) {
+    switch (topic) {
 
       case "spend":
         msg += `  run net.js spend cash [num?]   - trade hashes for cash, defaults to 1 transaction\n`;
-        msg += `  run net.js min [target] [num?] - lower the target server's minimum security level\n `;
+        msg += `  run net.js min [target] [num?] - lower the target server's minimum security level\n`;
         msg += `  run net.js max [target] [num?] - raise the target server's max money available\n`;
+        break;
 
       default:
         msg += `  run net.js help            - display this help text\n`;
@@ -258,10 +259,10 @@ class HackNetServers extends HackNet {
     let prod = 0;
     for (const server of this.servers) {
       msg += `  ${server.name} => {`
-      msg += `prod: ${server.production}, `;
-      msg += `cap: ${server.hashCapacity}, `;
+      msg += `prod: ${this.ns.formatNumber(server.production)}, `;
+      msg += `cap: ${this.ns.formatNumber(server.hashCapacity)}, `;
       msg += `level: ${server.level}, `;
-      msg += `ram: ${server.ramUsed} / ${server.ram}, `;
+      msg += `ram: ${this.ns.formatRam(server.ramUsed)} / ${this.ns.formatRam(server.ram)}, `;
       msg += `cores: ${server.cores}, `;
       msg += `cache: ${server.cache}}\n`;
 
@@ -272,8 +273,8 @@ class HackNetServers extends HackNet {
     let left = this.maxHash - this.curHash;
     let timeLeft = left / prod;
     msg += `servers: ${this.curNodes} / ${this.maxNodes}\n`;
-    msg += `hashes: ${this.curHash.toLocaleString('en-US')} / ${this.maxHash}\n`;
-    msg += `hashes per sec: ${prod.toLocaleString('en-US')}\n`;
+    msg += `hashes: ${this.ns.formatNumber(this.curHash)} / ${this.ns.formatNumber(this.maxHash)}\n`;
+    msg += `hashes per sec: ${this.ns.formatNumber(prod)}\n`;
     msg += `time 'til full: ${formatTime(timeLeft)}`
 
     // print to terminal
@@ -284,43 +285,71 @@ class HackNetServers extends HackNet {
    * Spends hacknet hashes.
    */
   spend() {
+
+    // keep track of expenses
+    let cost = 0;  
+    let spent = 0;
+    let msg = '';
     
-    // 
+    // determine the upgrade type and set default number of upgrades to purchase
     let num = 1;
     let upgrade = this.ns.args[1] ? this.ns.args[1] : "";
     switch (upgrade) {
 
-      // 
+      // trade hash for cash!
       case "cash":
         num = this.ns.args[2] ? this.ns.args[2] : 1;
-        let total = 0;  
-        let spent = 0;
+        let total = 0;
         for (let i = 0; i < num; i++) {
+          cost = this.ns.hacknet.hashCost("Sell for Money");
           if (this.ns.hacknet.spendHashes("Sell for Money")) {
             total += 1000000;
-            spent += 4;
+            spent += cost;
           }
         }
-        this.ns.tprintf(`spent ${spent} hashes on a total of $${this.ns.formatNumber(total)}`);
-        this.ns.tprintf(`hashes: ${(this.curHash - spent).toLocaleString('en-US')} / ${this.maxHash}`);
-        return;
+        msg += `spent ${this.ns.formatNumber(spent)} hashes for a total of $${this.ns.formatNumber(total)}\n`;
+        break;
 
       case "min":
 
-        // 
+        // check the target server
         let target = this.ns.args[2];
         if (!target) {
-
+          this.help("spend");
+          return;
         }
 
-        // 
-        num = this.ns.args[3] ? this.ns.args[3] : 1;
+        // get previous security
+        let prevSec = this.ns.getServerMinSecurityLevel(target);
 
+        // spend hashes to reduce the minimum security the specified number of times
+        num = this.ns.args[3] ? this.ns.args[3] : 1;
+        for (let i = 0; i < num; i++) {
+          let cost = this.ns.hacknet.hashCost("Reduce Minimum Security");
+          if (this.ns.hacknet.spendHashes("Reduce Minimum Security", target)) {
+            spent += cost;
+          }
+        }
+
+        // calculate and display total reduced security
+        let newSec = this.ns.getServerMinSecurityLevel(target);
+        let diff = prevSec - newSec;
+        msg += `spent ${this.ns.formatNumber(spent)} hashes to lower `
+        msg += `${target}'s security by ${this.ns.formatNumber(diff)}, `
+        msg += `now at ${this.ns.formatNumber(newSec)}\n`;
+        break;
+
+      case "max":
+        break;
 
       default:
         this.help("spend");
-
+        break;
     }
+
+    // print remaining hashes
+    msg += `hashes: ${this.ns.formatNumber(this.curHash - spent)} / ${this.ns.formatNumber(this.maxHash)}\n`;
+    this.ns.tprintf(msg);
   }
 
 
