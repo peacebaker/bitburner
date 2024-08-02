@@ -5,6 +5,7 @@
  * @typedef {import('./bitburner-src/src/ScriptEditor/NetscriptDefinitions.js').NodeStats} NodeStats
  */
 
+
 import { formatTime } from './utils.js';
 
 
@@ -40,7 +41,7 @@ export async function main(ns) {
   //     return;
   // } 
 
-  const hackNet = new HackNetServers(ns);
+  let hackNet = new HackNetServers(ns);
   switch (cmd) {
     case "info":
       hackNet.info();
@@ -49,6 +50,7 @@ export async function main(ns) {
     case "upgrade":
       let amount = ns.args[1] ? ns.args[1] : 1;
       for (let i = 0; i < amount; i++) {
+        hackNet = new HackNetServers(ns);
         hackNet.upgrade();
       }
       return;
@@ -238,7 +240,7 @@ class HackNetServers extends HackNet {
       default:
         msg += `  run net.js help            - display this help text\n`;
         msg += `  run net.js info            - display information about all hacknet servers\n`
-        msg += `  run net.js upgrad          - upgrade the network by either purchasing or upgrading a server\n`
+        msg += `  run net.js upgrade         - upgrade the network by either purchasing or upgrading a server\n`
         msg += `  run net.js spend [upgrade] * spend hashes on various upgrades\n`
 
         break;
@@ -359,6 +361,15 @@ class HackNetServers extends HackNet {
    */
   upgrade() {
 
+    // if there are no servers available, buy one
+    if (this.servers.length === 0) {
+      let index = this.ns.hacknet.purchaseNode()
+      if (index) {
+        this.ns.tprintf(`bought hacknet-server-${index}`);
+      }
+      return;
+    }
+
     // determine the new server cost, hash rate, rate gains, and value
     let newServerCost = this.ns.hacknet.getPurchaseNodeCost();
     let newServerRate = this.ns.formulas.hacknetServers.hashGainRate(1, 0, 1, 1, this.mult);
@@ -385,10 +396,11 @@ class HackNetServers extends HackNet {
       }
     }
 
-    // if a new server is cheaper than the best upgrade cost, buy it
-    if (bestUpgrade.name !== "cache" && newServerValue > bestUpgrade.value) {
-      this.ns.tprintf(`new server value ${newServerValue} is more than than best upgrade value: ${bestUpgrade.value}, buying new server`);
-      this.ns.tprintf(`new server cost ${newServerCost} is less than best upgrade cost: ${bestUpgrade.cost}, buying new server`);
+    // // if a new server is cheaper than the best upgrade cost, buy it
+    // if (bestUpgrade.name !== "cache" && newServerValue > bestUpgrade.value) {
+
+    // always prefer buying a new server if it's cheaper
+    if (newServerCost < bestUpgrade.cost) {
       let index = this.ns.hacknet.purchaseNode()
       if (index) {
         this.ns.tprintf(`bought hacknet-server-${index}`);
@@ -396,11 +408,11 @@ class HackNetServers extends HackNet {
       return;
     }
 
-    // 
+    // determine the server to upgrade and how to upgrade it
     let i = bestUpgrade.index;
     switch (bestUpgrade.name) {
 
-      // 
+      // upgrade the server's cache
       case "cache":
         let cache = this.servers[i].cache;
         if (this.ns.hacknet.upgradeCache(i)) {
@@ -410,17 +422,17 @@ class HackNetServers extends HackNet {
         }
         return;
 
-      // 
+      // upgrade the server's level
       case "level":
         let level = this.servers[i].level;
         if (this.ns.hacknet.upgradeLevel(i)) {
-          this.ns.tprintf(`upgrade hacknet-server-${i}'s level from ${level} to ${level + 1}`);
+          this.ns.tprintf(`upgraded hacknet-server-${i}'s level from ${level} to ${level + 1}`);
         } else {
           this.ns.tprintf(`unable to upgrade hacknet-server-${i}'s level for $${this.ns.formatNumber(bestUpgrade.cost)}`);
         }
         return;
 
-      //
+      // upgrade the server's ram
       case "ram":
         let ram = this.servers[i].ram;
         if (this.ns.hacknet.upgradeRam(i)) {
@@ -430,7 +442,7 @@ class HackNetServers extends HackNet {
         }
         return;
 
-      //
+      // upgrade the total number of cores
       case "core":
         let cores = this.servers[i].cores;
         if (this.ns.hacknet.upgradeCore(i)) {
@@ -475,9 +487,10 @@ class HackNetServers extends HackNet {
     let coreValue = coreGains / coreCost;
     // this.ns.tprintf(`server: ${index}, target cores: ${server.cores + 1} => cost: ${coreCost}, rate: ${coreRate}, gains: ${coreGains}, value: ${coreValue}`);
 
-    // upgrade the cache first if it's cheaper than any other to upgrade
+    // upgrade the cache if it isn't the most expensive upgrade available
     let cacheCost = this.ns.hacknet.getCacheUpgradeCost(index);
     if (cacheCost < levelCost || cacheCost < ramCost || cacheCost < coreCost) {
+    // if (cacheCost < levelCost && cacheCost < ramCost && cacheCost < coreCost) {
       return {
         name: "cache",
         index: index,
