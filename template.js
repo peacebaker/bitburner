@@ -5,7 +5,9 @@
  */
 
 
-/** @param {NS} ns */
+/** 
+ * @param {NS} ns - Netscript.
+ */
 export async function main(ns) {
 
 }
