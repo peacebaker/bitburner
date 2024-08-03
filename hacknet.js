@@ -310,8 +310,8 @@ class HackNetServers extends HackNet {
 
     // always prefer buying a new server if it's cheaper
     if (newServerCost < bestUpgrade.cost) {
-      let index = this.ns.hacknet.purchaseNode()
-      if (index) {
+      let index = this.ns.hacknet.purchaseNode();
+      if (index !== -1) {
         this.ns.tprintf(`bought hacknet-server-${index}`);
       }
       return;
