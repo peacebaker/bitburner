@@ -9,6 +9,16 @@
 import { formatTime } from './utils.js';
 
 
+
+/**
+ * HackServer maximums:
+ *  max ram: 8.19TB
+ *  max cache: 15
+ * 
+ * 
+ */
+
+
 /**
  * Hacknet control script.
  * 
@@ -55,7 +65,7 @@ export async function main(ns) {
       }
       hackNet = new HackNetServers(ns);
       let nextUpgrade = hackNet.findBestUpgrade();
-      ns.tprintf(`next upgrade: hacknet-server-${nextUpgrade.index}'s ${nextUpgrade.name} for ${ns.formatNumber(nextUpgrade.cost)}`);
+      hackNet.print(`next upgrade: hacknet-server-${nextUpgrade.index}'s ${nextUpgrade.name} for ${ns.formatNumber(nextUpgrade.cost)}`);
       return;
 
     case "spend":
@@ -224,6 +234,27 @@ class HackNetServers extends HackNet {
   }
 
   /**
+   * Prints to the terminal, unless the -q flag is supplied.
+   * 
+   * @param {*} msg - The message to print.  Don't use %'s.
+   */
+  print(msg) {
+
+    // use -q or --quiet to set quiet mode
+    let quiet = false;
+    for (const arg of this.ns.args) {
+      if (arg === "-q" || arg === "--quiet") {
+        quiet = true;
+      }
+    }
+
+    // print whatever to the screen
+    if (!quiet) {
+      this.ns.tprintf(`${msg}`);
+    }
+  }
+
+  /**
    * Prints a help message to the terminal.
    */
   help(topic) {
@@ -235,7 +266,7 @@ class HackNetServers extends HackNet {
     switch (topic) {
 
       case "spend":
-        msg += `  run hacknet.js spend cash [num?]   - trade hashes for cash, defaults to 1 transaction\n`;
+        msg += `  run hacknet.js spend cash [num?]   - trade hashes for cash\n`;
         msg += `  run hacknet.js min [target] [num?] - lower the target server's minimum security level\n`;
         msg += `  run hacknet.js max [target] [num?] - raise the target server's max money available\n`;
         break;
@@ -249,7 +280,7 @@ class HackNetServers extends HackNet {
         break;
     }
 
-    this.ns.tprintf(msg);
+    this.print(msg);
   }
 
   /**
@@ -283,7 +314,7 @@ class HackNetServers extends HackNet {
     msg += `time 'til full: ${formatTime(timeLeft)}`
 
     // print to terminal
-    this.ns.tprintf(msg);
+    this.print(msg);
   }
 
   /**
@@ -293,9 +324,9 @@ class HackNetServers extends HackNet {
 
     // if there are no servers available, buy one
     if (this.servers.length === 0) {
-      let index = this.ns.hacknet.purchaseNode();
+    let index = this.ns.hacknet.purchaseNode();
       if (index === 0) {
-        this.ns.tprintf(`bought hacknet-server-${index}`);
+        this.print(`bought hacknet-server-${index}`);
       }
       return;
     }
@@ -312,7 +343,7 @@ class HackNetServers extends HackNet {
     if (newServerCost < bestUpgrade.cost) {
       let index = this.ns.hacknet.purchaseNode();
       if (index !== -1) {
-        this.ns.tprintf(`bought hacknet-server-${index}`);
+        this.print(`bought hacknet-server-${index}`);
       }
       return;
     }
@@ -325,7 +356,7 @@ class HackNetServers extends HackNet {
       case "cache":
         let cache = this.servers[i].cache;
         if (this.ns.hacknet.upgradeCache(i)) {
-          this.ns.tprintf(`upgraded hacknet-server-${i}'s cache to from ${cache} to ${cache + 1}`);
+          this.print(`upgraded hacknet-server-${i}'s cache to from ${cache} to ${cache + 1}`);
         }
         return;
 
@@ -333,7 +364,7 @@ class HackNetServers extends HackNet {
       case "level":
         let level = this.servers[i].level;
         if (this.ns.hacknet.upgradeLevel(i)) {
-          this.ns.tprintf(`upgraded hacknet-server-${i}'s level from ${level} to ${level + 1}`);
+          this.print(`upgraded hacknet-server-${i}'s level from ${level} to ${level + 1}`);
         }
         return;
 
@@ -341,7 +372,7 @@ class HackNetServers extends HackNet {
       case "ram":
         let ram = this.servers[i].ram;
         if (this.ns.hacknet.upgradeRam(i)) {
-          this.ns.tprintf(`upgraded hacknet-server-${i}'s ram from ${ram} to ${ram * 2}`);
+          this.print(`upgraded hacknet-server-${i}'s ram from ${ram} to ${ram * 2}`);
         }
         return;
 
@@ -349,7 +380,7 @@ class HackNetServers extends HackNet {
       case "core":
         let cores = this.servers[i].cores;
         if (this.ns.hacknet.upgradeCore(i)) {
-          this.ns.tprintf(`upgraded hacknet-server-${i}'s cores from ${cores} to ${cores + 1}`);
+          this.print(`upgraded hacknet-server-${i}'s cores from ${cores} to ${cores + 1}`);
         }
         return;
     }
@@ -407,26 +438,30 @@ class HackNetServers extends HackNet {
     let levelRate = this.ns.formulas.hacknetServers.hashGainRate(server.level+1, server.ramUsed, server.ram, server.cores, this.mult);
     let levelGains = levelRate - curRate;
     let levelValue = levelGains / levelCost;
-    // this.ns.tprintf(`server: ${index}, target level: ${server.level + 1} => cost: ${levelCost}, rate: ${levelRate}, gains: ${levelGains}, value: ${levelValue}`);
+    // this.print(`server: ${index}, target level: ${server.level + 1} => cost: ${levelCost}, rate: ${levelRate}, gains: ${levelGains}, value: ${levelValue}`);
 
     // calculate the next ram cost, hash rate, rate gains, and value
     let ramCost = this.ns.hacknet.getRamUpgradeCost(index);
     let ramRate = this.ns.formulas.hacknetServers.hashGainRate(server.level, server.ramUsed, server.ram*2, server.cores, this.mult);
     let ramGains = ramRate - curRate;
     let ramValue = ramGains / ramCost;
-    // this.ns.tprintf(`server: ${index}, target ram: ${server.ram * 2} => cost: ${ramCost}, rate: ${ramRate}, gains: ${ramGains}, value: ${ramValue}`);
+    // this.print(`server: ${index}, target ram: ${server.ram * 2} => cost: ${ramCost}, rate: ${ramRate}, gains: ${ramGains}, value: ${ramValue}`);
 
     // calculate the next core's cost, hash rate, rate gains, and value
     let coreCost = this.ns.hacknet.getCoreUpgradeCost(index);
     let coreRate = this.ns.formulas.hacknetServers.hashGainRate(server.level, server.ramUsed, server.ram, server.cores+1, this.mult);
     let coreGains = coreRate - curRate;
     let coreValue = coreGains / coreCost;
-    // this.ns.tprintf(`server: ${index}, target cores: ${server.cores + 1} => cost: ${coreCost}, rate: ${coreRate}, gains: ${coreGains}, value: ${coreValue}`);
+    // this.print(`server: ${index}, target cores: ${server.cores + 1} => cost: ${coreCost}, rate: ${coreRate}, gains: ${coreGains}, value: ${coreValue}`);
+
+    // get the cost of a cache upgrade
+    let cacheCost = this.ns.hacknet.getCacheUpgradeCost(index);
 
     // upgrade the cache if it isn't the most expensive upgrade available
-    let cacheCost = this.ns.hacknet.getCacheUpgradeCost(index);
-    if (cacheCost < levelCost || cacheCost < ramCost || cacheCost < coreCost) {
-    // if (cacheCost < levelCost && cacheCost < ramCost && cacheCost < coreCost) {
+    // if (cacheCost < levelCost || cacheCost < ramCost || cacheCost < coreCost) {
+
+    // upgrade cache if it's the cheapest upgrade available
+    if (cacheCost < levelCost && cacheCost < ramCost && cacheCost < coreCost) {
       return {
         name: "cache",
         index: index,
@@ -470,7 +505,7 @@ class HackNetServers extends HackNet {
     }
 
     // show error if we get this far
-    this.ns.tprintf(`ERROR: something went wrong calculating ideal upgrade for ${server.name}.`);
+    this.print(`ERROR: something went wrong calculating ideal upgrade for ${server.name}.`);
   }
 
   /**
@@ -499,57 +534,34 @@ class HackNetServers extends HackNet {
         
       // trade hashes to raise a server's max money
       case "max": {
-
-        // check the target server
-        target = this.ns.args[2];
-        if (!target) {
-          this.help("spend");
-          return;
-        }
-
-        // get previous security
-        let prevMax = this.ns.getServerMaxMoney(target);
-
-        // spend hashes to reduce the minimum security the specified number of times
-        let num = this.ns.args[3] ? this.ns.args[3] : 1;
-        for (let i = 0; i < num; i++) {
-          let cost = this.ns.hacknet.hashCost("Reduce Minimum Security");
-          if (this.ns.hacknet.spendHashes("Reduce Minimum Security", target)) {
-            spent += cost;
-          }
-        }
-
-        // calculate and display total reduced security
-        let newMax = this.ns.getServerMaxMoney(target);
-        let maxDiff = prevSec - newSec;
-        msg += `spent ${this.ns.formatNumber(spent)} hashes to lower `
-        msg += `${target}'s security by ${this.ns.formatNumber(secDiff)}, `
-        msg += `now at ${this.ns.formatNumber(newSec)}\n`;
+        spent = this.#spendMax();
         break;
-
       }
 
       // trade hashes to increase the amount of experience you get from studying at a university
-      case "study":
-        num = this.ns.args[2] ? this.ns.args[2] : 1;
+      case "study": {
+
+        let num = this.ns.args[2] ? this.ns.args[2] : 1;
         for (let i = 0; i < num; i++) {
-          cost = this.ns.hacknet.hashCost("Improve Studying");
+          let cost = this.ns.hacknet.hashCost("Improve Studying");
           if (this.ns.hacknet.spendHashes("Improve Studying")) {
             spent += cost;
           }
         }
         let studyLevel = this.ns.hacknet.getHashUpgradeLevel("Improve Studying");
-        let studyMult = studyLevel * 20;
-        msg += `spent ${this.ns.formatNumber(spent)} hashes, study multiplier improved to ${studyMult}%}\n`;
+        let studyMult = (studyLevel * .2) + 1;
+        this.print(`spent ${this.ns.formatNumber(spent)} hashes, study multiplier improved to ${this.ns.formatNumber(studyMult)}`);
         break;
 
+      }
+        
       default:
         this.help("spend");
         break;
     }
 
     // print remaining hashes
-    this.ns.tprintf(`hashes: ${this.ns.formatNumber(this.curHash - spent)} / ${this.ns.formatNumber(this.maxHash)}`);
+    this.print(`hashes: ${this.ns.formatNumber(this.curHash - spent)} / ${this.ns.formatNumber(this.maxHash)}`);
   }
 
   #spendCash() {
@@ -569,7 +581,7 @@ class HackNetServers extends HackNet {
     }
 
     // tell the user what happened
-    this.ns.tprintf(`spent ${this.ns.formatNumber(spent)} hashes for a total of $${this.ns.formatNumber(total)}`);
+    this.print(`spent ${this.ns.formatNumber(spent)} hashes for a total of $${this.ns.formatNumber(total)}`);
     
     // return the number of hashes spent
     return spent
@@ -577,16 +589,16 @@ class HackNetServers extends HackNet {
 
   #spendMin() {
 
-    // keep track of expenses and security level
-    let spent = 0
-    let prevSec = this.ns.getServerMinSecurityLevel(target);
-
     // check the target server
     let target = this.ns.args[2];
     if (!target) {
       this.help("spend");
       return;
     }
+
+    // keep track of expenses and security level
+    let spent = 0
+    let prevSec = this.ns.getServerMinSecurityLevel(target);
 
     // spend hashes to reduce the minimum security the specified number of times
     let num = this.ns.args[3] ? this.ns.args[3] : 1;
@@ -600,9 +612,46 @@ class HackNetServers extends HackNet {
     // calculate and display total reduced security
     let newSec = this.ns.getServerMinSecurityLevel(target);
     let diff = prevSec - newSec;
+    let next = this.ns.hacknet.hashCost("Reduce Minimum Security");
     let msg = `spent ${this.ns.formatNumber(spent)} hashes to lower ${target}'s security by `
-    msg += `${this.ns.formatNumber(diff)}, now at ${this.ns.formatNumber(newSec)}\n`;
-    this.ns.tprintf(msg);
+    msg += `${this.ns.formatNumber(diff)}, now at ${this.ns.formatNumber(newSec)}, `;
+    msg += `next increase at ${this.ns.formatNumber(next)} hashes\n`;
+    this.print(msg);
+
+    // return expenses
+    return spent;
+  }
+
+  #spendMax() {
+
+    // check the target server
+    let target = this.ns.args[2];
+    if (!target) {
+      this.help("spend");
+      return;
+    }
+
+    // get previous security
+    let spent = 0;
+    let prevMax = this.ns.getServerMaxMoney(target);
+
+    // spend hashes to reduce the minimum security the specified number of times
+    let num = this.ns.args[3] ? this.ns.args[3] : 1;
+    for (let i = 0; i < num; i++) {
+      let cost = this.ns.hacknet.hashCost("Increase Maximum Money");
+      if (this.ns.hacknet.spendHashes("Increase Maximum Money", target)) {
+        spent += cost;
+      }
+    }
+
+    // calculate and display the server's new max money and the cost of next upgrade
+    let newMax = this.ns.getServerMaxMoney(target);
+    let diff = newMax - prevMax;
+    let next = this.ns.hacknet.hashCost("Increase Maximum Money");
+    let msg = `spent ${this.ns.formatNumber(spent)} hashes to raise ${target}'s max money by `
+    msg += `${this.ns.formatNumber(diff)}, now at ${this.ns.formatNumber(newMax)}, `
+    msg += `next increase at ${this.ns.formatNumber(next)} hashes\n`;
+    this.print(msg);
 
     // return expenses
     return spent;
