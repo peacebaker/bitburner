@@ -425,7 +425,7 @@ class HackNetServers extends HackNet {
    * Determine which attribute should be upgraded by analyzing the value of each upgrade.
    * Value determined by extra hash rate / upgrade cost.
    * 
-   * @param {NodeStats} server - The 
+   * @param {NodeStats} server - The server to be analyzed.
    */
   #findIdealUpgrade(server) {
 
